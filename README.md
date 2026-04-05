@@ -1,3 +1,5 @@
+![Deploy](https://github.com/abderrahimhtml/homeops/actions/workflows/deploy.yml/badge.svg)
+
 # HomeOps - Self-Hosted Server Infrastructure
 
 Personal homelab infrastructure project demonstrating real-world sysadmin and DevOps skills.
