@@ -1,0 +1,6 @@
+---
+- name: Provisionar homeops-server
+  hosts: homeops
+  become: true
+  roles:
+    - server

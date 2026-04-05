@@ -1,0 +1,83 @@
+---
+- name: Actualizar apt
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Instalar dependencias base
+  apt:
+    name:
+      - curl
+      - git
+      - ufw
+      - ca-certificates
+      - gnupg
+      - lsb-release
+    state: present
+
+- name: Añadir clave GPG de Docker
+  shell: |
+    install -m 0755 -d /etc/apt/keyrings
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+    chmod a+r /etc/apt/keyrings/docker.asc
+  args:
+    creates: /etc/apt/keyrings/docker.asc
+
+- name: Añadir repositorio Docker
+  shell: |
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+  args:
+    creates: /etc/apt/sources.list.d/docker.list
+
+- name: Instalar Docker
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose-plugin
+    update_cache: yes
+    state: present
+
+- name: Añadir usuario al grupo docker
+  user:
+    name: homeops-server
+    groups: docker
+    append: yes
+
+- name: Instalar Nginx
+  apt:
+    name: nginx
+    state: present
+
+- name: Configurar UFW - permitir SSH
+  ufw:
+    rule: allow
+    port: "22"
+
+- name: Configurar UFW - permitir HTTP
+  ufw:
+    rule: allow
+    port: "80"
+
+- name: Configurar UFW - permitir HTTPS
+  ufw:
+    rule: allow
+    port: "443"
+
+- name: Activar UFW
+  ufw:
+    state: enabled
+    policy: deny
+
+- name: Arrancar y habilitar Docker
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Arrancar y habilitar Nginx
+  service:
+    name: nginx
+    state: started
+    enabled: yes

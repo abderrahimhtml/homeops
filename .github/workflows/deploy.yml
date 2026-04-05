@@ -1,0 +1,21 @@
+name: Deploy HomeOps
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Rebuild y reiniciar contenedor
+        run: |
+          cd ~/app
+          sudo docker compose up -d --build
+
+      - name: Verificar API
+        run: curl -k https://localhost/health
