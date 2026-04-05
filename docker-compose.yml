@@ -5,3 +5,21 @@ services:
     restart: always
     ports:
       - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://homeops:homeops@db:5432/homeops
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16-alpine
+    container_name: homeops-db
+    restart: always
+    environment:
+      POSTGRES_USER: homeops
+      POSTGRES_PASSWORD: homeops
+      POSTGRES_DB: homeops
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
